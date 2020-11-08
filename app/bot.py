@@ -41,6 +41,7 @@ async def on_message(message):
 
 async def run():
     bot.load_extension('cogs.mod')
+    bot.load_extension('cogs.settings')
     try:
         await db.open()
         await bot.start(TOKEN)

@@ -1,5 +1,34 @@
+import discord
 import aiosqlite as asq
 from asyncio import Lock
+
+
+async def create_user_data(bot, user: discord.User):
+    check_user = """SELECT * FROM users WHERE id=?"""
+    create_user = """INSERT INTO users (id) VALUES (?)"""
+
+    conn = bot.db.conn
+    async with bot.db.lock:
+        cursor = await conn.execute(check_user, [user.id])
+        sql_user = await cursor.fetchone()
+        if sql_user is None:
+            await conn.execute(
+                create_user, [user.id]
+            )
+        await conn.commit()
+
+
+async def create_guild_data(bot, guild: discord.Guild):
+    check_guild = """SELECT * FROM guilds WHERE id=?"""
+    create_guild = """INSERT INTO guilds (id) VALUES (?)"""
+
+    conn = bot.db.conn
+    async with bot.db.lock:
+        cursor = await conn.execute(check_guild, [guild.id])
+        sql_guild = await cursor.fetchone()
+        if sql_guild is None:
+            await conn.execute(create_guild, [guild.id])
+        await conn.commit()
 
 
 class Database:

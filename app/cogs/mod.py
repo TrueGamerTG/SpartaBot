@@ -8,6 +8,72 @@ class Mod(commands.Cog):
         self.bot = bot
 
     @commands.command(
+        name='mute', aliases=['m']
+    )
+    @commands.bot_has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
+    @commands.guild_only()
+    async def mute_user(
+        self, ctx,
+        user: discord.Member,
+        *, reason: str = None
+    ):
+        get_muterole = """SELECT * FROM guilds WHERE id=?"""
+        conn = self.bot.db.conn
+        async with self.bot.db.lock:
+            cursor = await conn.execute(get_muterole, [ctx.guild.id])
+            guild = await cursor.fetchone()
+
+        if guild is None or guild['muterole'] is None:
+            await ctx.send(
+                "Before you can mute, you must set a muterole. "
+                "Please run `muterole <role>`"
+            )
+            return
+        muterole = ctx.guild.get_role(guild['muterole'])
+        if muterole is None:
+            await ctx.send(
+                "The muterole was deleted. Please create a new one."
+            )
+            return
+        await user.add_roles(muterole)
+        await ctx.send(f"Muted **{user}**")
+
+    @commands.command(
+        name='unmute', aliases=['um']
+    )
+    @commands.bot_has_permissions(manage_roles=True)
+    @commands.has_guild_permissions(manage_roles=True)
+    @commands.guild_only()
+    async def unmute_user(
+        self, ctx,
+        user: discord.Member,
+        *, reason: str = None
+    ):
+        get_muterole = """SELECT * FROM guilds WHERE id=?"""
+        conn = self.bot.db.conn
+        async with self.bot.db.lock:
+            cursor = await conn.execute(get_muterole, [ctx.guild.id])
+            guild = await cursor.fetchone()
+
+        if guild is None or guild['muterole'] is None:
+            await ctx.send(
+                "There is no muterole set. Please run `muterole <role>`"
+            )
+            return
+
+        muterole = ctx.guild.get_role(guild['muterole'])
+        
+        if muterole is None:
+            await ctx.send(
+                "The muterole was deleted. Please create a new one."
+            )
+            return
+        
+        await user.remove_roles(muterole)
+        await ctx.send(f"Unmuted **{user}**")
+
+    @commands.command(
         name='clear', aliases=['purge']
     )
     @commands.bot_has_permissions(
