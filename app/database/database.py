@@ -9,8 +9,26 @@ class Database:
         self.lock = Lock()
 
     async def open(self):
-        # Create connection object
+        conn = await asq.connect(self.path)
+        await conn.execute(
+            "PRAGMA foreign_keys=True"
+        )
+        conn.row_factory = self._dict_factory
+        self.conn = conn
         await self.create_tables()
+
+    def _dict_factory(self, cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
+
+    async def _create_table(self, sql):
+        #cursor = self.cursor()
+        async with self.lock:
+            c = await self.conn.cursor()
+            await c.execute(sql)
+            await self.conn.commit()
 
     async def create_tables(self):
         guild_table = \
@@ -24,7 +42,7 @@ class Database:
                 welcome_msg TEXT DEFAULT null,
                 leave_msg TEXT DEFAULT null,
 
-                delete_links bool DEFAULT false,
+                delete_links bool DEFAULT false
             )"""
 
         joinrole_table = \
@@ -59,3 +77,8 @@ class Database:
                 message TEXT NOT NULL,
                 remind_time TIMESTAMP NOT NULL
             )"""
+
+        await self._create_table(guild_table)
+        await self._create_table(joinrole_table)
+        await self._create_table(afk_table)
+        await self._create_table(reminder_table)
