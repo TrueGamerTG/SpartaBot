@@ -1,5 +1,6 @@
 import os
 import asyncio
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 from database import database
@@ -8,6 +9,10 @@ load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 PREFIX = os.getenv("PREFIX")
+INTENTS = discord.Intents(
+    messages=True, guilds=True,
+    members=True
+)
 
 
 class Bot(commands.Bot):
