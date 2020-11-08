@@ -1,5 +1,4 @@
 import discord
-from discord import utils
 from typing import Union
 from discord.ext import commands
 
