@@ -63,13 +63,13 @@ class Mod(commands.Cog):
             return
 
         muterole = ctx.guild.get_role(guild['muterole'])
-        
+
         if muterole is None:
             await ctx.send(
                 "The muterole was deleted. Please create a new one."
             )
             return
-        
+
         await user.remove_roles(muterole)
         await ctx.send(f"Unmuted **{user}**")
 
