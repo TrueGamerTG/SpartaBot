@@ -42,7 +42,28 @@ class Database:
                 welcome_msg TEXT DEFAULT null,
                 leave_msg TEXT DEFAULT null,
 
+                muterole INTEGER DEFAULT null,
+
                 delete_links bool DEFAULT false
+            )"""
+
+        users_table = \
+            """CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY
+            )"""
+
+        warn_table = \
+            """CREATE TABLE IF NOT EXISTS warns (
+                id INTEGER PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                guild_id INTEGER NOT NULL,
+
+                reason text NOT NULL,
+
+                FOREIGN KEY (user_id) REFERENCES users (id)
+                    ON DELETE CASCADE,
+                FOREIGN KEY (guild_id) REFERENCES guilds (id)
+                    ON DELETE CASCADE
             )"""
 
         joinrole_table = \
@@ -79,6 +100,8 @@ class Database:
             )"""
 
         await self._create_table(guild_table)
+        await self._create_table(users_table)
+        await self._create_table(warn_table)
         await self._create_table(joinrole_table)
         await self._create_table(afk_table)
         await self._create_table(reminder_table)

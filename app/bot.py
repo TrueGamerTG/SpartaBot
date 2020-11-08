@@ -20,7 +20,7 @@ class Bot(commands.Bot):
         print("Logging Out")
 
 
-db = database.Database("db.sqlite3")
+db = database.Database("app/database/db.sqlite3")
 bot = Bot(
     # TODO: Make callable prefix
     db, command_prefix=PREFIX
@@ -40,6 +40,7 @@ async def on_message(message):
 
 
 async def run():
+    bot.load_extension('cogs.mod')
     try:
         await db.open()
         await bot.start(TOKEN)
