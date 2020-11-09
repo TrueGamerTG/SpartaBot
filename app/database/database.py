@@ -53,7 +53,6 @@ class Database:
         return d
 
     async def _create_table(self, sql):
-        #cursor = self.cursor()
         async with self.lock:
             c = await self.conn.cursor()
             await c.execute(sql)
