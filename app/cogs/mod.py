@@ -217,7 +217,7 @@ class Mod(commands.Cog):
             if reason:
                 await ctx.send(
                     f"User **{user}** has been kicked "
-                    "for reason: **{reason}**."
+                    f"for reason: **{reason}**."
                 )
             else:
                 await ctx.send(f"User **{user}** has been kicked.")

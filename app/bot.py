@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 from database import database
+from pretty_help import PrettyHelp
 
 load_dotenv()
 
@@ -28,7 +29,8 @@ class Bot(commands.Bot):
 db = database.Database("app/database/db.sqlite3")
 bot = Bot(
     # TODO: Make callable prefix
-    db, command_prefix=PREFIX
+    db, command_prefix=PREFIX,
+    help_command=PrettyHelp()
 )
 
 

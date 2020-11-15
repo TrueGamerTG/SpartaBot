@@ -19,6 +19,22 @@ async def set_muterole_perms(guild, role):
     return worked, failed
 
 
+async def set_muterole(bot, guild, muterole):
+    update_guild = \
+        """UPDATE guilds
+        SET muterole=?
+        WHERE id=?"""
+
+    await database.create_guild_data(bot, guild)
+
+    conn = bot.db.conn
+    async with bot.db.lock:
+        await conn.execute(
+            update_guild, [muterole.id, guild.id]
+        )
+        await conn.commit()
+
+
 class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -31,23 +47,13 @@ class Settings(commands.Cog):
         manage_roles=True, manage_channels=True,
     )
     @commands.guild_only()
-    async def set_muterole(
+    async def muterole(
         self, ctx,
         muterole: discord.Role
     ):
-        update_guild = \
-            """UPDATE guilds
-            SET muterole=?
-            WHERE id=?"""
-
-        await database.create_guild_data(self.bot, ctx.guild)
-
-        conn = self.bot.db.conn
-        async with self.bot.db.lock:
-            await conn.execute(
-                update_guild, [muterole.id, ctx.guild.id]
-            )
-            await conn.commit()
+        await set_muterole(
+            self.bot, ctx.guild, muterole
+        )
 
         await ctx.send(
             f"Set the muterole to **{muterole.name}**\n"
@@ -56,7 +62,66 @@ class Settings(commands.Cog):
 
         async with ctx.typing():
             await set_muterole_perms(ctx.guild, muterole)
+
         await ctx.send("Finished.")
+
+    @muterole.command(name='create')
+    @commands.has_guild_permissions(
+        manage_roles=True, manage_channels=True
+    )
+    @commands.guild_only()
+    async def create_muterole(
+        self, ctx
+    ):
+        muterole = await ctx.guild.create_role(name='muted')
+        await set_muterole(
+            self.bot, ctx.guild, muterole
+        )
+
+        await ctx.send(
+            f"Created and set the muterole to **{muterole.name}**\n"
+            "Setting permissions..."
+        )
+
+        async with ctx.typing():
+            await set_muterole_perms(ctx.guild, muterole)
+
+        await ctx.send("Finished")
+
+    @muterole.command(name='update')
+    @commands.has_guild_permissions(
+        manage_roles=True, manage_channels=True
+    )
+    @commands.guild_only()
+    async def update_muterole(
+        self, ctx
+    ):
+        get_muterole = \
+            """SELECT * FROM guilds WHERE id=?"""
+        
+        conn = self.bot.db.conn
+        async with self.bot.db.lock:
+            cursor = await conn.execute(
+                get_muterole,
+                [ctx.guild.id]
+            )
+            sql_muterole = await cursor.fetchone()
+
+        if sql_muterole is None:
+            await ctx.send("You do not have a muterole set.")
+            return
+
+        muterole = ctx.guild.get_role(sql_muterole['id'])
+        if muterole is None:
+            await ctx.send("The muterole was deleted.")
+            return
+
+        await ctx.send("Setting permissions...")
+
+        async with ctx.typing():
+            await set_muterole_perms(ctx.guild, muterole)
+
+        await ctx.send("Finished")
 
 
 def setup(bot):
