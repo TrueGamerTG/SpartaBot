@@ -6,9 +6,7 @@ class Mod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-        name='mute', aliases=['m']
-    )
+    @commands.command(name='mute', aliases=['m'])
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_guild_permissions(manage_roles=True)
     @commands.guild_only()

@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from pretty_help import PrettyHelp
+from pretty_help import PrettyHelp, Navigation
 
 from database import database
 
@@ -15,6 +15,9 @@ INTENTS = discord.Intents(
     messages=True, guilds=True,
     members=True
 )
+THEME = discord.Color.blurple()
+
+help_nav = Navigation()
 
 
 class Bot(commands.Bot):
@@ -31,7 +34,7 @@ db = database.Database("app/database/db.sqlite3")
 bot = Bot(
     # TODO: Make callable prefix
     db, command_prefix=PREFIX,
-    help_command=PrettyHelp()
+    help_command=PrettyHelp(navigation=help_nav, color=THEME)
 )
 
 
