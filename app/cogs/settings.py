@@ -1,6 +1,7 @@
 import discord
-from database import database
 from discord.ext import commands
+
+from database import database
 
 
 async def set_muterole_perms(guild, role):
@@ -39,18 +40,10 @@ class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(
-        name='muterole',
-        invoke_without_command=True
-    )
-    @commands.has_guild_permissions(
-        manage_roles=True, manage_channels=True,
-    )
+    @commands.group(name='muterole', invoke_without_command=True)
+    @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
-    async def muterole(
-        self, ctx,
-        muterole: discord.Role
-    ):
+    async def muterole(self, ctx,muterole: discord.Role):
         await set_muterole(
             self.bot, ctx.guild, muterole
         )
@@ -66,13 +59,9 @@ class Settings(commands.Cog):
         await ctx.send("Finished.")
 
     @muterole.command(name='create')
-    @commands.has_guild_permissions(
-        manage_roles=True, manage_channels=True
-    )
+    @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
-    async def create_muterole(
-        self, ctx
-    ):
+    async def create_muterole(self, ctx):
         muterole = await ctx.guild.create_role(name='muted')
         await set_muterole(
             self.bot, ctx.guild, muterole
@@ -89,16 +78,12 @@ class Settings(commands.Cog):
         await ctx.send("Finished")
 
     @muterole.command(name='update')
-    @commands.has_guild_permissions(
-        manage_roles=True, manage_channels=True
-    )
+    @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
-    async def update_muterole(
-        self, ctx
-    ):
+    async def update_muterole(self, ctx):
         get_muterole = \
             """SELECT * FROM guilds WHERE id=?"""
-        
+
         conn = self.bot.db.conn
         async with self.bot.db.lock:
             cursor = await conn.execute(

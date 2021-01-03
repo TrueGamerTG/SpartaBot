@@ -1,6 +1,6 @@
+from asyncio import Lock
 import discord
 import aiosqlite as asq
-from asyncio import Lock
 
 
 async def create_user_data(bot, user: discord.User):

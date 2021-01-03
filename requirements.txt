@@ -1,0 +1,4 @@
+discord.py
+python-dotenv
+discord-pretty-help
+aiosqlite

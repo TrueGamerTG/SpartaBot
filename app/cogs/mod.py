@@ -1,5 +1,4 @@
 import discord
-from typing import Union
 from discord.ext import commands
 
 
@@ -13,11 +12,7 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_guild_permissions(manage_roles=True)
     @commands.guild_only()
-    async def mute_user(
-        self, ctx,
-        user: discord.Member,
-        *, reason: str = None
-    ):
+    async def mute_user(self, ctx, user: discord.Member, *, reason: str = None):
         get_muterole = """SELECT * FROM guilds WHERE id=?"""
         conn = self.bot.db.conn
         async with self.bot.db.lock:
@@ -36,20 +31,14 @@ class Mod(commands.Cog):
                 "The muterole was deleted. Please create a new one."
             )
             return
-        await user.add_roles(muterole)
+        await user.add_roles(muterole, reason=reason)
         await ctx.send(f"Muted **{user}**")
 
-    @commands.command(
-        name='unmute', aliases=['um']
-    )
+    @commands.command(name='unmute', aliases=['um'])
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_guild_permissions(manage_roles=True)
     @commands.guild_only()
-    async def unmute_user(
-        self, ctx,
-        user: discord.Member,
-        *, reason: str = None
-    ):
+    async def unmute_user(self, ctx, user: discord.Member):
         get_muterole = """SELECT * FROM guilds WHERE id=?"""
         conn = self.bot.db.conn
         async with self.bot.db.lock:
@@ -73,20 +62,11 @@ class Mod(commands.Cog):
         await user.remove_roles(muterole)
         await ctx.send(f"Unmuted **{user}**")
 
-    @commands.command(
-        name='clear', aliases=['purge']
-    )
-    @commands.bot_has_permissions(
-        manage_messages=True,
-        read_message_history=True
-    )
+    @commands.command(name='clear', aliases=['purge'])
+    @commands.bot_has_permissions(manage_messages=True, read_message_history=True)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
-    async def purge(
-        self, ctx,
-        limit: int,
-        user: discord.User = None
-    ):
+    async def purge(self, ctx, limit: int, user: discord.User = None):
         def check(message):
             if user is not None and message.author.id != user.id:
                 return False
@@ -108,7 +88,7 @@ class Mod(commands.Cog):
 
     @commands.command(name="ban")
     @commands.has_guild_permissions(ban_members=True)
-    async def ban(self, ctx, user: Union[discord.Member, int], *, reason=None):
+    async def ban(self, ctx, user: discord.Member, *, reason=None):
         if not isinstance(user, int):
             if ctx.author.top_role.position <= user.top_role.position \
                     and ctx.guild.owner_id != ctx.author.id:
@@ -141,10 +121,7 @@ class Mod(commands.Cog):
     @commands.command(name="unban")
     @commands.has_guild_permissions(ban_members=True)
     @commands.guild_only()
-    async def unban(
-        self, ctx, user: Union[discord.User, int, str],
-        *, reason=None
-    ):
+    async def unban(self, ctx, user: discord.User, *, reason=None):
         if isinstance(user, int):
             user_str = f"<@{user}>"
             user = discord.Object(id=user)
