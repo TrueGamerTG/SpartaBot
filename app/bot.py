@@ -53,6 +53,7 @@ async def on_message(message):
 async def run():
     bot.load_extension('cogs.mod')
     bot.load_extension('cogs.settings')
+    bot.load_extension('cogs.topgg')
     try:
         await db.open()
         await bot.start(TOKEN)
