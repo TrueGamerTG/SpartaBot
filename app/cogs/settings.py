@@ -43,7 +43,7 @@ class Settings(commands.Cog):
     @commands.group(name='muterole', invoke_without_command=True)
     @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
-    async def muterole(self, ctx,muterole: discord.Role):
+    async def muterole(self, ctx, muterole: discord.Role):
         await set_muterole(
             self.bot, ctx.guild, muterole
         )
@@ -107,6 +107,26 @@ class Settings(commands.Cog):
             await set_muterole_perms(ctx.guild, muterole)
 
         await ctx.send("Finished")
+
+    @commands.command(name="welcomechannel", aliases=["wc"])
+    @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
+    @commands.guild_only()
+    async def welcome_channel(self, ctx, welcome_channel: discord.TextChannel):
+        update_guild = \
+            """UPDATE guilds
+            SET welcome_channel=?
+            WHERE id=?"""
+
+        await database.create_guild_data(self.bot, ctx.guild)
+
+        conn = self.bot.db.conn
+        async with self.bot.db.lock:
+            await conn.execute(
+                update_guild, [welcome_channel.id, ctx.guild.id]
+            )
+            await conn.commit()
+
+        await ctx.send(f"Your server's welcome channel has been set to {welcome_channel.mention}")
 
 
 def setup(bot):
