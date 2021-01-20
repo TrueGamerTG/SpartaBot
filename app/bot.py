@@ -3,17 +3,21 @@ import asyncio
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from pretty_help import PrettyHelp, Navigation
+
 from database import database
-from pretty_help import PrettyHelp
 
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
-PREFIX = os.getenv("PREFIX")
+TOKEN = os.getenv("SPARTA_TOKEN")
+PREFIX = "sb!" # TODO: Make this s! when rewrite is finished
 INTENTS = discord.Intents(
     messages=True, guilds=True,
     members=True
 )
+THEME = discord.Color.blurple()
+
+help_nav = Navigation()
 
 
 class Bot(commands.Bot):
@@ -30,7 +34,7 @@ db = database.Database("app/database/db.sqlite3")
 bot = Bot(
     # TODO: Make callable prefix
     db, command_prefix=PREFIX,
-    help_command=PrettyHelp()
+    help_command=PrettyHelp(navigation=help_nav, color=THEME)
 )
 
 
@@ -50,6 +54,7 @@ async def run():
     bot.load_extension('cogs.mod')
     bot.load_extension('cogs.settings')
     bot.load_extension('cogs.fun')
+    bot.load_extension('cogs.topgg')
     try:
         await db.open()
         await bot.start(TOKEN)
