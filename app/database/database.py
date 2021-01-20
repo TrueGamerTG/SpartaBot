@@ -75,6 +75,12 @@ class Database:
                 delete_links bool DEFAULT false
             )"""
 
+        webhooks_table = \
+            """CREATE TABLE IF NOT EXISTS webhooks (
+                webhook_url TEXT NOT NULL,
+                channel_id INTEGER NOT NULL
+            )"""
+
         users_table = \
             """CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY
@@ -128,6 +134,7 @@ class Database:
             )"""
 
         await self._create_table(guild_table)
+        await self._create_table(webhooks_table)
         await self._create_table(users_table)
         await self._create_table(warn_table)
         await self._create_table(joinrole_table)
