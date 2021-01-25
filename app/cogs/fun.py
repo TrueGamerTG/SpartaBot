@@ -47,10 +47,14 @@ class Fun(commands.Cog):
                 reason="Impersonation Command",
             )
             async with self.bot.db.lock:
-                await conn.execute(create_webhook, [ctx.channel.id, webhook.url])
+                await conn.execute(
+                    create_webhook, [ctx.channel.id, webhook.url]
+                )
                 await conn.commit()
 
-        await webhook.send(message, username=user.name, avatar_url=user.avatar_url)
+        await webhook.send(
+            message, username=user.name, avatar_url=user.avatar_url
+        )
 
 
 def setup(bot) -> None:

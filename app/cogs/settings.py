@@ -43,7 +43,8 @@ class Settings(commands.Cog):
         await set_muterole(self.bot, ctx.guild, muterole)
 
         await ctx.send(
-            f"Set the muterole to **{muterole.name}**\n" "Setting permissions..."
+            f"Set the muterole to **{muterole.name}**\n"
+            "Setting permissions..."
         )
 
         async with ctx.typing():
@@ -107,7 +108,9 @@ class Settings(commands.Cog):
 
         conn = self.bot.db.conn
         async with self.bot.db.lock:
-            await conn.execute(update_guild, [welcome_channel.id, ctx.guild.id])
+            await conn.execute(
+                update_guild, [welcome_channel.id, ctx.guild.id]
+            )
             await conn.commit()
 
         await ctx.send(

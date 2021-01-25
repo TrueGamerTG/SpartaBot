@@ -10,7 +10,9 @@ class Mod(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_guild_permissions(manage_roles=True)
     @commands.guild_only()
-    async def mute_user(self, ctx, user: discord.Member, *, reason: str = None):
+    async def mute_user(
+        self, ctx, user: discord.Member, *, reason: str = None
+    ):
         get_muterole = """SELECT * FROM guilds WHERE id=?"""
         conn = self.bot.db.conn
         async with self.bot.db.lock:
@@ -25,7 +27,9 @@ class Mod(commands.Cog):
             return
         muterole = ctx.guild.get_role(guild["muterole"])
         if muterole is None:
-            await ctx.send("The muterole was deleted. Please create a new one.")
+            await ctx.send(
+                "The muterole was deleted. Please create a new one."
+            )
             return
         await user.add_roles(muterole, reason=reason)
         await ctx.send(f"Muted **{user}**")
@@ -42,20 +46,26 @@ class Mod(commands.Cog):
             guild = await cursor.fetchone()
 
         if guild is None or guild["muterole"] is None:
-            await ctx.send("There is no muterole set. Please run `muterole <role>`")
+            await ctx.send(
+                "There is no muterole set. Please run `muterole <role>`"
+            )
             return
 
         muterole = ctx.guild.get_role(guild["muterole"])
 
         if muterole is None:
-            await ctx.send("The muterole was deleted. Please create a new one.")
+            await ctx.send(
+                "The muterole was deleted. Please create a new one."
+            )
             return
 
         await user.remove_roles(muterole)
         await ctx.send(f"Unmuted **{user}**")
 
     @commands.command(name="clear", aliases=["purge"])
-    @commands.bot_has_permissions(manage_messages=True, read_message_history=True)
+    @commands.bot_has_permissions(
+        manage_messages=True, read_message_history=True
+    )
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     async def purge(self, ctx, limit: int, user: discord.User = None):
@@ -106,7 +116,8 @@ class Mod(commands.Cog):
         await ctx.guild.ban(user, reason=reason)
         if reason:
             await ctx.send(
-                f"User **{user_str}** has been banned for reason: " f"**{reason}**."
+                f"User **{user_str}** has been banned for reason: "
+                f"**{reason}**."
             )
         else:
             await ctx.send(f"User **{user_str}** has been banned.")
@@ -129,7 +140,9 @@ class Mod(commands.Cog):
                 print(f"<{name}>")
                 print(f"<{tag}>")
             except Exception:
-                await ctx.send("Please format the username like this: " "Username#0000")
+                await ctx.send(
+                    "Please format the username like this: " "Username#0000"
+                )
                 return
 
             banned_user = None
@@ -143,14 +156,18 @@ class Mod(commands.Cog):
                 return
             await ctx.guild.unban(banned_user.user)
             try:
-                await banned_user.send(f"You have been unbanned with reason: {reason}")
+                await banned_user.send(
+                    f"You have been unbanned with reason: {reason}"
+                )
             except Exception:
                 pass
 
         else:
             await ctx.guild.unban(user)
             try:
-                await user.send(f"You have been unbanned with reason: {reason}")
+                await user.send(
+                    f"You have been unbanned with reason: {reason}"
+                )
             except Exception:
                 pass
 
@@ -181,7 +198,8 @@ class Mod(commands.Cog):
                 pass
             if reason:
                 await ctx.send(
-                    f"User **{user}** has been kicked " f"for reason: **{reason}**."
+                    f"User **{user}** has been kicked "
+                    f"for reason: **{reason}**."
                 )
             else:
                 await ctx.send(f"User **{user}** has been kicked.")
