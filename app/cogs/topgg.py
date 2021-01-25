@@ -1,6 +1,7 @@
+import os
+
 import dbl
 import discord
-import os
 from discord.ext import commands
 
 
@@ -14,6 +15,7 @@ class TopGG(commands.Cog):
 
     async def on_guild_post():
         print("Server count posted successfully")
+
 
 def setup(bot):
     bot.add_cog(TopGG(bot))

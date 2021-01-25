@@ -6,7 +6,7 @@ class Mod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='mute', aliases=['m'])
+    @commands.command(name="mute", aliases=["m"])
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_guild_permissions(manage_roles=True)
     @commands.guild_only()
@@ -17,22 +17,20 @@ class Mod(commands.Cog):
             cursor = await conn.execute(get_muterole, [ctx.guild.id])
             guild = await cursor.fetchone()
 
-        if guild is None or guild['muterole'] is None:
+        if guild is None or guild["muterole"] is None:
             await ctx.send(
                 "Before you can mute, you must set a muterole. "
                 "Please run `muterole <role>`"
             )
             return
-        muterole = ctx.guild.get_role(guild['muterole'])
+        muterole = ctx.guild.get_role(guild["muterole"])
         if muterole is None:
-            await ctx.send(
-                "The muterole was deleted. Please create a new one."
-            )
+            await ctx.send("The muterole was deleted. Please create a new one.")
             return
         await user.add_roles(muterole, reason=reason)
         await ctx.send(f"Muted **{user}**")
 
-    @commands.command(name='unmute', aliases=['um'])
+    @commands.command(name="unmute", aliases=["um"])
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_guild_permissions(manage_roles=True)
     @commands.guild_only()
@@ -43,24 +41,20 @@ class Mod(commands.Cog):
             cursor = await conn.execute(get_muterole, [ctx.guild.id])
             guild = await cursor.fetchone()
 
-        if guild is None or guild['muterole'] is None:
-            await ctx.send(
-                "There is no muterole set. Please run `muterole <role>`"
-            )
+        if guild is None or guild["muterole"] is None:
+            await ctx.send("There is no muterole set. Please run `muterole <role>`")
             return
 
-        muterole = ctx.guild.get_role(guild['muterole'])
+        muterole = ctx.guild.get_role(guild["muterole"])
 
         if muterole is None:
-            await ctx.send(
-                "The muterole was deleted. Please create a new one."
-            )
+            await ctx.send("The muterole was deleted. Please create a new one.")
             return
 
         await user.remove_roles(muterole)
         await ctx.send(f"Unmuted **{user}**")
 
-    @commands.command(name='clear', aliases=['purge'])
+    @commands.command(name="clear", aliases=["purge"])
     @commands.bot_has_permissions(manage_messages=True, read_message_history=True)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
@@ -88,8 +82,10 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(ban_members=True)
     async def ban(self, ctx, user: discord.Member, *, reason=None):
         if not isinstance(user, int):
-            if ctx.author.top_role.position <= user.top_role.position \
-                    and ctx.guild.owner_id != ctx.author.id:
+            if (
+                ctx.author.top_role.position <= user.top_role.position
+                and ctx.guild.owner_id != ctx.author.id
+            ):
                 await ctx.send(
                     "You cannot ban this user because their role "
                     "is higher than or equal to yours."
@@ -110,8 +106,7 @@ class Mod(commands.Cog):
         await ctx.guild.ban(user, reason=reason)
         if reason:
             await ctx.send(
-                f"User **{user_str}** has been banned for reason: "
-                f"**{reason}**."
+                f"User **{user_str}** has been banned for reason: " f"**{reason}**."
             )
         else:
             await ctx.send(f"User **{user_str}** has been banned.")
@@ -130,14 +125,11 @@ class Mod(commands.Cog):
             guild_bans = await ctx.guild.bans()
             print(guild_bans)
             try:
-                name, tag = user.split('#')
+                name, tag = user.split("#")
                 print(f"<{name}>")
                 print(f"<{tag}>")
             except Exception:
-                await ctx.send(
-                    "Please format the username like this: "
-                    "Username#0000"
-                )
+                await ctx.send("Please format the username like this: " "Username#0000")
                 return
 
             banned_user = None
@@ -151,18 +143,14 @@ class Mod(commands.Cog):
                 return
             await ctx.guild.unban(banned_user.user)
             try:
-                await banned_user.send(
-                    f"You have been unbanned with reason: {reason}"
-                )
+                await banned_user.send(f"You have been unbanned with reason: {reason}")
             except Exception:
                 pass
 
         else:
             await ctx.guild.unban(user)
             try:
-                await user.send(
-                    f"You have been unbanned with reason: {reason}"
-                )
+                await user.send(f"You have been unbanned with reason: {reason}")
             except Exception:
                 pass
 
@@ -174,8 +162,10 @@ class Mod(commands.Cog):
         if reason is None:
             reason = "No reason provided."
 
-        if ctx.author.top_role.position <= user.top_role.position \
-                and ctx.guild.owner_id != ctx.author.id:
+        if (
+            ctx.author.top_role.position <= user.top_role.position
+            and ctx.guild.owner_id != ctx.author.id
+        ):
             await ctx.send(
                 "You cannot kick this user because their role is "
                 "higher than or equal to yours."
@@ -191,8 +181,7 @@ class Mod(commands.Cog):
                 pass
             if reason:
                 await ctx.send(
-                    f"User **{user}** has been kicked "
-                    f"for reason: **{reason}**."
+                    f"User **{user}** has been kicked " f"for reason: **{reason}**."
                 )
             else:
                 await ctx.send(f"User **{user}** has been kicked.")

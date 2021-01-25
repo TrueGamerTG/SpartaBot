@@ -1,6 +1,7 @@
 from asyncio import Lock
-import discord
+
 import aiosqlite as asq
+import discord
 
 
 async def create_user_data(bot, user: discord.User):
@@ -12,9 +13,7 @@ async def create_user_data(bot, user: discord.User):
         cursor = await conn.execute(check_user, [user.id])
         sql_user = await cursor.fetchone()
         if sql_user is None:
-            await conn.execute(
-                create_user, [user.id]
-            )
+            await conn.execute(create_user, [user.id])
         await conn.commit()
 
 
@@ -39,9 +38,7 @@ class Database:
 
     async def open(self):
         conn = await asq.connect(self.path)
-        await conn.execute(
-            "PRAGMA foreign_keys=True"
-        )
+        await conn.execute("PRAGMA foreign_keys=True")
         conn.row_factory = self._dict_factory
         self.conn = conn
         await self.create_tables()
@@ -59,8 +56,7 @@ class Database:
             await self.conn.commit()
 
     async def create_tables(self):
-        guild_table = \
-            """CREATE TABLE IF NOT EXISTS guilds (
+        guild_table = """CREATE TABLE IF NOT EXISTS guilds (
                 id INTEGER PRIMARY KEY,
 
                 prefix TEXT DEFAULT null,
@@ -75,19 +71,16 @@ class Database:
                 delete_links bool DEFAULT false
             )"""
 
-        webhooks_table = \
-            """CREATE TABLE IF NOT EXISTS webhooks (
+        webhooks_table = """CREATE TABLE IF NOT EXISTS webhooks (
                 webhook_url TEXT NOT NULL,
                 channel_id INTEGER NOT NULL
             )"""
 
-        users_table = \
-            """CREATE TABLE IF NOT EXISTS users (
+        users_table = """CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY
             )"""
 
-        warn_table = \
-            """CREATE TABLE IF NOT EXISTS warns (
+        warn_table = """CREATE TABLE IF NOT EXISTS warns (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER NOT NULL,
                 guild_id INTEGER NOT NULL,
@@ -100,8 +93,7 @@ class Database:
                     ON DELETE CASCADE
             )"""
 
-        joinrole_table = \
-            """CREATE TABLE IF NOT EXISTS joinroles (
+        joinrole_table = """CREATE TABLE IF NOT EXISTS joinroles (
                 id INTEGER PRIMARY KEY,
                 role_id INTEGER NOT NULL,
                 guild_id INTEGER NOT NULL,
@@ -110,8 +102,7 @@ class Database:
                     ON DELETE CASCADE
             )"""
 
-        afk_table = \
-            """CREATE TABLE IF NOT EXISTS afks (
+        afk_table = """CREATE TABLE IF NOT EXISTS afks (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER NOT NULL,
                 guild_id INTEGER DEFAULT null,
@@ -124,8 +115,7 @@ class Database:
                     ON DELETE CASCADE
             )"""
 
-        reminder_table = \
-            """CREATE TABLE IF NOT EXISTS reminders (
+        reminder_table = """CREATE TABLE IF NOT EXISTS reminders (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER NOT NULL,
 

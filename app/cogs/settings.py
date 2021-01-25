@@ -10,8 +10,7 @@ async def set_muterole_perms(guild, role):
     for channel in guild.channels:
         try:
             await channel.set_permissions(
-                role, send_messages=False,
-                add_reactions=False
+                role, send_messages=False, add_reactions=False
             )
             worked += 1
         except Exception as e:
@@ -21,8 +20,7 @@ async def set_muterole_perms(guild, role):
 
 
 async def set_muterole(bot, guild, muterole):
-    update_guild = \
-        """UPDATE guilds
+    update_guild = """UPDATE guilds
         SET muterole=?
         WHERE id=?"""
 
@@ -30,9 +28,7 @@ async def set_muterole(bot, guild, muterole):
 
     conn = bot.db.conn
     async with bot.db.lock:
-        await conn.execute(
-            update_guild, [muterole.id, guild.id]
-        )
+        await conn.execute(update_guild, [muterole.id, guild.id])
         await conn.commit()
 
 
@@ -40,17 +36,14 @@ class Settings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name='muterole', invoke_without_command=True)
+    @commands.group(name="muterole", invoke_without_command=True)
     @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
     async def muterole(self, ctx, muterole: discord.Role):
-        await set_muterole(
-            self.bot, ctx.guild, muterole
-        )
+        await set_muterole(self.bot, ctx.guild, muterole)
 
         await ctx.send(
-            f"Set the muterole to **{muterole.name}**\n"
-            "Setting permissions..."
+            f"Set the muterole to **{muterole.name}**\n" "Setting permissions..."
         )
 
         async with ctx.typing():
@@ -58,14 +51,12 @@ class Settings(commands.Cog):
 
         await ctx.send("Finished.")
 
-    @muterole.command(name='create')
+    @muterole.command(name="create")
     @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
     async def create_muterole(self, ctx):
-        muterole = await ctx.guild.create_role(name='muted')
-        await set_muterole(
-            self.bot, ctx.guild, muterole
-        )
+        muterole = await ctx.guild.create_role(name="muted")
+        await set_muterole(self.bot, ctx.guild, muterole)
 
         await ctx.send(
             f"Created and set the muterole to **{muterole.name}**\n"
@@ -77,26 +68,22 @@ class Settings(commands.Cog):
 
         await ctx.send("Finished")
 
-    @muterole.command(name='update')
+    @muterole.command(name="update")
     @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
     async def update_muterole(self, ctx):
-        get_muterole = \
-            """SELECT * FROM guilds WHERE id=?"""
+        get_muterole = """SELECT * FROM guilds WHERE id=?"""
 
         conn = self.bot.db.conn
         async with self.bot.db.lock:
-            cursor = await conn.execute(
-                get_muterole,
-                [ctx.guild.id]
-            )
+            cursor = await conn.execute(get_muterole, [ctx.guild.id])
             sql_muterole = await cursor.fetchone()
 
         if sql_muterole is None:
             await ctx.send("You do not have a muterole set.")
             return
 
-        muterole = ctx.guild.get_role(sql_muterole['id'])
+        muterole = ctx.guild.get_role(sql_muterole["id"])
         if muterole is None:
             await ctx.send("The muterole was deleted.")
             return
@@ -112,8 +99,7 @@ class Settings(commands.Cog):
     @commands.has_guild_permissions(manage_roles=True, manage_channels=True)
     @commands.guild_only()
     async def welcome_channel(self, ctx, welcome_channel: discord.TextChannel):
-        update_guild = \
-            """UPDATE guilds
+        update_guild = """UPDATE guilds
             SET welcome_channel=?
             WHERE id=?"""
 
@@ -121,12 +107,12 @@ class Settings(commands.Cog):
 
         conn = self.bot.db.conn
         async with self.bot.db.lock:
-            await conn.execute(
-                update_guild, [welcome_channel.id, ctx.guild.id]
-            )
+            await conn.execute(update_guild, [welcome_channel.id, ctx.guild.id])
             await conn.commit()
 
-        await ctx.send(f"Your server's welcome channel has been set to {welcome_channel.mention}")
+        await ctx.send(
+            f"Your server's welcome channel has been set to {welcome_channel.mention}"
+        )
 
 
 def setup(bot):
