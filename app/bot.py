@@ -10,7 +10,7 @@ from database import database
 
 load_dotenv()
 
-TOKEN = os.getenv("SPARTA_TOKEN")
+TOKEN = os.getenv("TOKEN")
 PREFIX = "sb!"  # TODO: Make this s! when rewrite is finished
 INTENTS = discord.Intents(messages=True, guilds=True, members=True)
 THEME = discord.Color.blurple()
